@@ -1,6 +1,6 @@
 {-# OPTIONS --cubical --allow-unsolved-metas #-}
 
-module root where
+module index where
 
   -- Utilities
   open import CategoryTheory
@@ -25,6 +25,3 @@ module root where
   -- Compatible composite proofs
   open import MndCompatibleComposite
   open import MndDistrLawToCompatibleComposite
-
-  
--- use agda --html --html-dir=htmlcode root.agda in directory Cubical-final
