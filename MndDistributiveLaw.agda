@@ -7,12 +7,12 @@ open MC.MndContainer
 open import Level
 open import Function
 open import Data.Product using (uncurry)
-open import Cubical.Foundations.Prelude hiding (_▷_)
+open import Cubical.Foundations.Prelude hiding (_◁_)
 
 -- Distributive law direction: Aₘ ∘ Bₘ → Bₘ ∘ Aₘ
 record MndDistributiveLaw (ℓs ℓp : Level)
                           (S : Set ℓs) (P : S → Set ℓp) (T : Set ℓs) (Q : T → Set ℓp)
-                          (Aₘ : MndContainer _ _ (S ▷ P)) (Bₘ : MndContainer _ _ (T ▷ Q)) :
+                          (Aₘ : MndContainer _ _ (S ◁ P)) (Bₘ : MndContainer _ _ (T ◁ Q)) :
                           Set (suc (ℓs ⊔ ℓp)) where
   field
     u₁ : (s : S) (f : P s → T) → T

@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --allow-unsolved-metas #-}
+{-# OPTIONS --cubical #-}
 
 {-
   Examples of various distribute laws, including uniqueness proofs for certain ones
@@ -9,11 +9,12 @@ open import ContainerExamples
 
 open import Level renaming (suc to lsuc ; zero to lzero)
 open import Function 
-open import Cubical.Foundations.Prelude hiding (_▷_)
+open import Cubical.Foundations.Prelude hiding (_◁_)
 open import Cubical.Data.Empty renaming (rec* to ⊥-rec)
 open import Cubical.Data.Nat
 open import Cubical.Data.Fin
 open import Cubical.Data.Sigma renaming (fst to π₁ ; snd to π₂)
+open import Cubical.Data.Sum
 
 module DistributiveLawExamples where
 
@@ -24,119 +25,120 @@ module DistributiveLawExamples where
   open DL.MndDistributiveLaw
   open MonadExamples
 
-  MaybeDistr : ∀ {ℓs ℓp} (S : Set ℓs) (P : S → Set ℓp) (MC : MndContainer ℓs ℓp (S ▷ P)) →
-               MndDistributiveLaw ℓs ℓp 𝟚 JustOrNothing S P MaybeM MC
-  u₁ (MaybeDistr S P MC) true f = f tt
-  u₁ (MaybeDistr S P MC) false f = MC .ι
-  u₂ (MaybeDistr S P MC) true f _ = true
-  u₂ (MaybeDistr S P MC) false f _ = false
-  v₁ (MaybeDistr S P MC) {true} _ x = tt
-  v₂ (MaybeDistr S P MC) {true} {f} p x = p
-  unit-ιB-shape₁ (MaybeDistr S P MC) true = refl
-  unit-ιB-shape₁ (MaybeDistr S P MC) false = refl
-  unit-ιB-shape₂ (MaybeDistr S P MC) true = refl
-  unit-ιB-shape₂ (MaybeDistr S P MC) false = refl
-  unit-ιB-pos₁ (MaybeDistr S P MC) true i q tt = tt
-  unit-ιB-pos₂ (MaybeDistr S P MC) true i q tt = q
-  unit-ιA-shape₁ (MaybeDistr S P MC) _ = refl
-  unit-ιA-shape₂ (MaybeDistr S P MC) _ = refl
-  unit-ιA-pos₁ (MaybeDistr S P MC) s i q tt = tt
-  unit-ιA-pos₂ (MaybeDistr S P MC) s i q tt = q
-  mul-A-shape₁ (MaybeDistr S P MC) true f g = refl
-  mul-A-shape₁ (MaybeDistr S P MC) false f g = refl
-  mul-A-shape₂ (MaybeDistr S P MC) true f g = refl
-  mul-A-shape₂ (MaybeDistr S P MC) false f g = refl
-  mul-A-pos₁ (MaybeDistr S P MC) true f g = refl
-  mul-A-pos₁ (MaybeDistr {ℓs} {ℓp} S P MC) false f g i q ()
-  mul-A-pos₂₁ (MaybeDistr S P MC) true f g = refl
-  mul-A-pos₂₁ (MaybeDistr {ℓs} {ℓp} S P MC) false f g i q ()
-  mul-A-pos₂₂ (MaybeDistr S P MC) true f g = refl
-  mul-A-pos₂₂ (MaybeDistr S P MC) false f g i q ()
-  mul-B-shape₁ (MaybeDistr S P MC) true f g = refl
-  mul-B-shape₁ (MaybeDistr S P MC) false f g i = unit-r (isMndContainer MC) (MC .ι) (~ i)
-  mul-B-shape₂ (MaybeDistr S P MC) true f g = refl
-  mul-B-shape₂ (MaybeDistr S P MC) false f g i = λ _ → false
-  mul-B-pos₁ (MaybeDistr S P MC) true f g i q tt = tt 
-  mul-B-pos₁ (MaybeDistr S P MC) false f g i q ()
-  mul-B-pos₂₁ (MaybeDistr S P MC) true f g i q tt = (MC .pr₁) (f tt) (g tt) q
-  mul-B-pos₂₁ (MaybeDistr S P MC) false f g i q ()
-  mul-B-pos₂₂ (MaybeDistr S P MC) true f g i q tt = (MC .pr₂) (f tt) (g tt) q
-  mul-B-pos₂₂ (MaybeDistr S P MC) false f g i q ()
+  CoproductDistr : ∀ {ℓs ℓp} (E : Set ℓs) (S : Set ℓs) (P : S → Set ℓp) (MC : MndContainer ℓs ℓp (S ◁ P)) →
+                   MndDistributiveLaw ℓs ℓp ((⊤ {ℓs}) ⊎ E) LOrR S P (CoproductM E) MC
+  u₁ (CoproductDistr E S P MC) (inl tt) f = f tt
+  u₁ (CoproductDistr E S P MC) (inr _) f = MC .ι
+  u₂ (CoproductDistr E S P MC) (inl tt) f _ = inl tt
+  u₂ (CoproductDistr E S P MC) (inr e) f _ = inr e
+  v₁ (CoproductDistr E S P MC) {inl tt} _ x = tt
+  v₂ (CoproductDistr E S P MC) {inl tt} {f} p x = p
+  unit-ιB-shape₁ (CoproductDistr E S P MC) (inl tt) = refl
+  unit-ιB-shape₁ (CoproductDistr E S P MC) (inr _) = refl
+  unit-ιB-shape₂ (CoproductDistr E S P MC) (inl tt) = refl
+  unit-ιB-shape₂ (CoproductDistr E S P MC) (inr _) = refl
+  unit-ιB-pos₁ (CoproductDistr E S P MC) (inl tt) i q tt = tt
+  unit-ιB-pos₂ (CoproductDistr E S P MC) (inl tt) i q tt = q
+  unit-ιA-shape₁ (CoproductDistr E S P MC) _ = refl
+  unit-ιA-shape₂ (CoproductDistr E S P MC) _ = refl
+  unit-ιA-pos₁ (CoproductDistr E S P MC) s i q tt = tt
+  unit-ιA-pos₂ (CoproductDistr E S P MC) s i q tt = q
+  mul-A-shape₁ (CoproductDistr E S P MC) (inl tt) f g = refl
+  mul-A-shape₁ (CoproductDistr E S P MC) (inr _) f g = refl
+  mul-A-shape₂ (CoproductDistr E S P MC) (inl tt) f g = refl
+  mul-A-shape₂ (CoproductDistr E S P MC) (inr _) f g = refl
+  mul-A-pos₁ (CoproductDistr E S P MC) (inl tt) f g = refl
+  mul-A-pos₁ (CoproductDistr {ℓs} {ℓp} E S P MC) (inr _) f g i q ()
+  mul-A-pos₂₁ (CoproductDistr E S P MC) (inl tt) f g = refl
+  mul-A-pos₂₁ (CoproductDistr {ℓs} {ℓp} E S P MC) (inr _) f g i q ()
+  mul-A-pos₂₂ (CoproductDistr E S P MC) (inl tt) f g = refl
+  mul-A-pos₂₂ (CoproductDistr E S P MC) (inr _) f g i q ()
+  mul-B-shape₁ (CoproductDistr E S P MC) (inl tt) f g = refl
+  mul-B-shape₁ (CoproductDistr E S P MC) (inr _) f g i = unit-r (isMndContainer MC) (MC .ι) (~ i)
+  mul-B-shape₂ (CoproductDistr E S P MC) (inl tt) f g = refl
+  mul-B-shape₂ (CoproductDistr E S P MC) (inr e) f g i = λ _ → inr e
+  mul-B-pos₁ (CoproductDistr E S P MC) (inl tt) f g i q tt = tt 
+  mul-B-pos₁ (CoproductDistr E S P MC) (inr _) f g i q ()
+  mul-B-pos₂₁ (CoproductDistr E S P MC) (inl tt) f g i q tt = (MC .pr₁) (f tt) (g tt) q
+  mul-B-pos₂₁ (CoproductDistr E S P MC) (inr _) f g i q ()
+  mul-B-pos₂₂ (CoproductDistr E S P MC) (inl tt) f g i q tt = (MC .pr₂) (f tt) (g tt) q
+  mul-B-pos₂₂ (CoproductDistr E S P MC) (inr _) f g i q ()
 
   lemF : ∀ {ℓ ℓ'} {A : Set ℓ} (f g : ⊥* {ℓ'} → A) → f ≡ g
   lemF f g = sym (isContrΠ⊥* .snd f) ∙ isContrΠ⊥* .snd g
 
-  module MaybeDistrUnique {ℓs ℓp} (S : Set ℓs) (P : S → Set ℓp) (MC : MndContainer ℓs ℓp (S ▷ P))
-                          (l : MndDistributiveLaw ℓs ℓp 𝟚 JustOrNothing S P MaybeM MC) where
+  module CoproductDistrUnique {ℓs ℓp} (E : Set ℓs) (S : Set ℓs) (P : S → Set ℓp) (MC : MndContainer ℓs ℓp (S ◁ P))
+                          (l : MndDistributiveLaw ℓs ℓp ((⊤ {ℓs}) ⊎ E) LOrR S P (CoproductM E) MC) where
 
-    L₀ = MaybeDistr S P MC
+    L₀ = CoproductDistr E S P MC
+    ⊤+E = (⊤ {ℓs}) ⊎ E
 
-    u1 : (s : 𝟚) (f : JustOrNothing s → S) → u₁ L₀ s f ≡ u₁ l s f
-    u1 true f i = hcomp (λ j → λ { (i = i0) → f tt
-                                 ; (i = i1) → u₁ l true (λ x → f (⊤-singleton x (~ j)))
-                                 }) 
-                        (unit-ιA-shape₁ l (f tt) (~ i))
-    u1 false f i = hcomp (λ j → λ { (i = i0) → ι MC
-                                  ; (i = i1) → u₁ l false (lemF (const (ι MC)) f j) 
-                                  })
-                         (unit-ιB-shape₁ l false (~ i))
+    u1 : (s : ⊤+E) (f : LOrR s → S) → u₁ L₀ s f ≡ u₁ l s f
+    u1 (inl tt) f i = hcomp (λ j → λ { (i = i0) → f tt
+                                     ; (i = i1) → u₁ l (inl tt) (λ x → f (⊤-singleton x (~ j)))
+                                     }) 
+                            (unit-ιA-shape₁ l (f tt) (~ i))
+    u1 (inr e) f i = hcomp (λ j → λ { (i = i0) → ι MC
+                                    ; (i = i1) → u₁ l (inr e) (lemF (const (ι MC)) f j) 
+                                    })
+                           (unit-ιB-shape₁ l (inr e) (~ i))
 
-    u2 : (s : 𝟚) (f : JustOrNothing s → S) →
-         PathP (λ i → P (u1 s f i) → 𝟚) (u₂ L₀ s f) (u₂ l s f)
-    u2 true f i = comp (λ j → P (compPath-filler (λ i' → unit-ιA-shape₁ l (f tt) (~ i')) 
-                                                 (λ i' → u₁ l true (λ x → f (⊤-singleton x (~ i')))) j i
-                                ) → 𝟚 {ℓs})
-                       (λ j → λ { (i = i0) → λ p → true ;
-                                  (i = i1) → λ p → u₂ l true (λ x → f (⊤-singleton x (~ j))) p })
-                       (λ p → unit-ιA-shape₂ l (f tt) (~ i) p)
-    u2 false f = compPathP' {B = (λ x → P x → 𝟚)}
-                            {x' = λ x → unit-ιB-shape₂ l false (~ i0) x}
-                            {y' = λ p → unit-ιB-shape₂ l false (~ i1) p}
-                            {z' = λ p → u₂ l false (lemF (const (ι MC)) f i1) p}
-                            (λ i p → unit-ιB-shape₂ l false (~ i) p) 
-                            (λ i p → u₂ l false (lemF (const (ι MC)) f i) p)
+    u2 : (s : ⊤+E) (f : LOrR s → S) →
+         PathP (λ i → P (u1 s f i) → ⊤+E) (u₂ L₀ s f) (u₂ l s f)
+    u2 (inl tt) f i = comp (λ j → P (compPath-filler (λ i' → unit-ιA-shape₁ l (f tt) (~ i')) 
+                                                     (λ i' → u₁ l (inl tt) (λ x → f (⊤-singleton x (~ i')))) j i
+                                    ) → ⊤+E)
+                           (λ j → λ { (i = i0) → λ p → inl tt ;
+                                      (i = i1) → λ p → u₂ l (inl tt) (λ x → f (⊤-singleton x (~ j))) p })
+                           (λ p → unit-ιA-shape₂ l (f tt) (~ i) p)
+    u2 (inr e) f = compPathP' {B = (λ x → P x → ⊤+E)}
+                              {x' = λ x → unit-ιB-shape₂ l (inr e) (~ i0) x}
+                              {y' = λ p → unit-ιB-shape₂ l (inr e) (~ i1) p}
+                              {z' = λ p → u₂ l (inr e) (lemF (const (ι MC)) f i1) p}
+                              (λ i p → unit-ιB-shape₂ l (inr e) (~ i) p) 
+                              (λ i p → u₂ l (inr e) (lemF (const (ι MC)) f i) p)
 
-    v1 : (s : 𝟚) (f : JustOrNothing s → S) →
-         PathP (λ i → (p : P (u1 s f i)) → JustOrNothing (u2 s f i p) → JustOrNothing s)
+    v1 : (s : ⊤+E) (f : LOrR s → S) →
+         PathP (λ i → (p : P (u1 s f i)) → LOrR (u2 s f i p) → LOrR s)
                (λ p q → v₁ L₀ {s} {f} p q) 
                (λ p q → v₁ l {s} {f} p q)
-    v1 true f i = comp (λ j → (p : P (compPath-filler (λ k → unit-ιA-shape₁ l (f tt) (~ k)) 
-                                                      (λ k → u₁ l true (λ x → f (⊤-singleton x (~ k)))) j i
-                                     )) → 
-                              JustOrNothing {ℓs} {ℓp} (compPathP'-filler {B = (λ x → P x → 𝟚)}
+    v1 (inl tt) f i = comp (λ j → (p : P (compPath-filler (λ k → unit-ιA-shape₁ l (f tt) (~ k)) 
+                                                      (λ k → u₁ l (inl tt) (λ x → f (⊤-singleton x (~ k)))) j i
+                                         )) → 
+                                       LOrR {ℓs} {ℓs} {ℓp} (compPathP'-filler {B = (λ x → P x → ⊤+E)}
                                                                          (λ k p' → unit-ιA-shape₂ l (f tt) (~ k) p') 
-                                                                         (λ k p' → u₂ l true (λ x → f (⊤-singleton x (~ k))) p') j i p
+                                                                         (λ k p' → u₂ l (inl tt) (λ x → f (⊤-singleton x (~ k))) p') j i p
                                             ) → 
-                              ⊤ {ℓp}
+                                       ⊤ {ℓp}
                        )
                        (λ j → λ { (i = i0) → λ p q → tt ;
                                   (i = i1) → λ p q → ⊤-singleton (v₁ l p q) (~ j)
                                 })
                        (λ p q → tt)
-    v1 false f = toPathP (funExt λ p → funExt (λ q → ⊥-rec (subst JustOrNothing (lem p) q)))
+    v1 (inr e) f = toPathP (funExt λ p → funExt (λ q → ⊥-rec (subst LOrR (lem p) q)))
       where
-        lem : (p : P (u₁ l false f)) → u₂ l false f p ≡ false
-        lem p = funExt⁻ (sym (fromPathP (u2 false f))) p
+        lem : (p : P (u₁ l (inr e) f)) → u₂ l (inr e) f p ≡ inr e
+        lem p = funExt⁻ (sym (fromPathP (u2 (inr e) f))) p ∙ cong inr (transportRefl e)
 
-    v2 : (s : 𝟚) (f : JustOrNothing s → S) →
-         PathP (λ i → (p : P (u1 s f i)) (q : JustOrNothing (u2 s f i p)) → P (f (v1 s f i p q)))
+    v2 : (s : ⊤+E) (f : LOrR s → S) →
+         PathP (λ i → (p : P (u1 s f i)) (q : LOrR (u2 s f i p)) → P (f (v1 s f i p q)))
                (λ p q → v₂ L₀ {s} {f} p q) 
                (λ p q → v₂ l {s} {f} p q)
-    v2 true f i =    
+    v2 (inl tt) f i =    
         comp (λ j → (p : P (compPath-filler (λ k → unit-ιA-shape₁ l (f tt) (~ k)) 
-                                            (λ k → u₁ l true (λ x → f (⊤-singleton x (~ k)))) j i
+                                            (λ k → u₁ l (inl tt) (λ x → f (⊤-singleton x (~ k)))) j i
                            )) → 
-                              (q : JustOrNothing {ℓs} {ℓp} (compPathP'-filler {B = (λ x → P x → 𝟚)}
+                              (q : LOrR {ℓs} {ℓs} {ℓp} (compPathP'-filler {B = (λ x → P x → ⊤+E)}
                                                                               (λ k p' → unit-ιA-shape₂ l (f tt) (~ k) p') 
-                                                                              (λ k p' → u₂ l true (λ x → f (⊤-singleton x (~ k))) p') j i p
+                                                                              (λ k p' → u₂ l (inl tt) (λ x → f (⊤-singleton x (~ k))) p') j i p
                                                            )) → 
                               P (f (fill (λ k' → (p : P (compPath-filler (λ k → unit-ιA-shape₁ l (f tt) (~ k)) 
-                                                                         (λ k → u₁ l true (λ x → f (⊤-singleton x (~ k)))) k' i
+                                                                         (λ k → u₁ l (inl tt) (λ x → f (⊤-singleton x (~ k)))) k' i
                                                         )) → 
-                                                 JustOrNothing {ℓs} {ℓp} (compPathP'-filler {B = (λ x → P x → 𝟚)}
+                                                 LOrR {ℓs} {ℓs} {ℓp} (compPathP'-filler {B = (λ x → P x → ⊤+E)}
                                                                                             (λ k p' → unit-ιA-shape₂ l (f tt) (~ k) p') 
-                                                                                            (λ k p' → u₂ l true (λ x → f (⊤-singleton x (~ k))) p') k' i p
-                                                                         ) → 
+                                                                                            (λ k p' → u₂ l (inl tt) (λ x → f (⊤-singleton x (~ k))) p') k' i p
+                                                                    ) → 
                                                  ⊤ {ℓp}
                                          )
                                          (λ k' → λ { (i = i0) → λ p q → tt
@@ -147,18 +149,18 @@ module DistributiveLawExamples where
                                 ))
                )
                (λ j → λ { (i = i0) → λ p q → p
-                        ; (i = i1) → λ p q → v₂ l {true} {λ x → f (⊤-singleton x (~ j))} p q
+                        ; (i = i1) → λ p q → v₂ l {inl tt} {λ x → f (⊤-singleton x (~ j))} p q
                         })
                (λ p q → unit-ιA-pos₂ l (f tt) (~ i) p q)
     
-    v2 false f = toPathP (funExt λ p → funExt (λ q → ⊥-rec (subst JustOrNothing (lem p) q)))
+    v2 (inr e) f = toPathP (funExt λ p → funExt (λ q → ⊥-rec (subst LOrR (lem p) q)))
       where
-        lem : (p : P (u₁ l false f)) → u₂ l false f p ≡ false
-        lem p = funExt⁻ (sym (fromPathP (u2 false f))) p
+        lem : (p : P (u₁ l (inr e) f)) → u₂ l (inr e) f p ≡ inr e
+        lem p = funExt⁻ (sym (fromPathP (u2 (inr e) f))) p ∙ cong inr (transportRefl e)
 
 
   ReaderDistr : ∀ {ℓs ℓp} (A : Set ℓp) (S : Set ℓs) (P : S → Set ℓp)
-    → (MC : MndContainer ℓs ℓp (S ▷ P))
+    → (MC : MndContainer ℓs ℓp (S ◁ P))
     → MndDistributiveLaw ℓs ℓp S P (⊤ {ℓs}) (const A) MC (ReaderM A)
   u₁ (ReaderDistr A S P MC) s _ = tt
   u₂ (ReaderDistr A S P MC) s _ a = s
@@ -183,7 +185,7 @@ module DistributiveLawExamples where
   mul-B-pos₂₁ (ReaderDistr A S P MC) s f g = refl
   mul-B-pos₂₂ (ReaderDistr A S P MC) s f g = refl
 
-  module ReaderDistrUnique {ℓs ℓp} (A : Set ℓp) (S : Set ℓs) (P : S → Set ℓp) (MC : MndContainer ℓs ℓp (S ▷ P))
+  module ReaderDistrUnique {ℓs ℓp} (A : Set ℓp) (S : Set ℓs) (P : S → Set ℓp) (MC : MndContainer ℓs ℓp (S ◁ P))
                            (L : MndDistributiveLaw ℓs ℓp S P (⊤ {ℓs}) (const A) MC (ReaderM A)) where
 
     L₀ = ReaderDistr A S P MC
@@ -230,9 +232,9 @@ module DistributiveLawExamples where
                       (v₂ L {s} {const tt} a)
         side2 i p = unit-ιB-pos₂ L s (~ i) a p
   
-  -- An example of a distributive law, this one is not unique for specific S ▷ P
+  -- An example of a distributive law, this one is not unique for specific S ◁ P
   WriterDistr : ∀ {ℓs ℓp} (A S : Set ℓs) (P : S → Set ℓp) →
-                  (mon : Monoid ℓs A) → (MC : MndContainer ℓs ℓp (S ▷ P)) →
+                  (mon : Monoid ℓs A) → (MC : MndContainer ℓs ℓp (S ◁ P)) →
                   MndDistributiveLaw ℓs ℓp A (const ⊤) S P (WriterM A mon) MC
   u₁ (WriterDistr A S P mon MC) a s = s tt
   u₂ (WriterDistr A S P mon MC) a s _ = a

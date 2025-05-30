@@ -12,7 +12,7 @@ open import MndCompatibleComposite as MCC
 
 open import Level renaming (suc to lsuc ; zero to lzero)
 open import Function
-open import Cubical.Foundations.Prelude hiding (_▷_)
+open import Cubical.Foundations.Prelude hiding (_◁_)
 open import Cubical.Data.Sigma renaming (fst to π₁ ; snd to π₂)
 
 {-
@@ -30,7 +30,7 @@ open import Cubical.Data.Sigma renaming (fst to π₁ ; snd to π₂)
 
 module MndDistrLawToCompatibleComposite (ℓs ℓp : Level) 
   (S : Set ℓs) (P : S → Set ℓp) (T : Set ℓs) (Q : T → Set ℓp)
-  (Aₘ : MndContainer _ _ (S ▷ P)) (Bₘ : MndContainer _ _ (T ▷ Q)) 
+  (Aₘ : MndContainer _ _ (S ◁ P)) (Bₘ : MndContainer _ _ (T ◁ Q)) 
   (distr : MndDistributiveLaw _ _ S P T Q Aₘ Bₘ) where
 
   open MCC.MndCompatibleComposite

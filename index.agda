@@ -25,3 +25,6 @@ module index where
   -- Compatible composite proofs
   open import MndCompatibleComposite
   open import MndDistrLawToCompatibleComposite
+
+  -- No-go theorem proofs
+  open import NoGoTheorem

@@ -1,27 +1,27 @@
 {-# OPTIONS --cubical #-}
 
-open import Level renaming (suc to lsuc ; zero to lzero)
-
-open import ContainersPlus hiding (α ; α⁻¹)
-open import Cubical.Data.Sigma
-open import Cubical.Foundations.Prelude hiding (_▷_)
-open import Function
 open import MndContainer as MC
+open import CategoryTheory
+open import ContainersPlus
+
+open import Level renaming (suc to lsuc ; zero to lzero)
+open import Function
+open import Cubical.Data.Sigma
+open import Cubical.Foundations.Prelude hiding (_◁_)
 open import Cubical.HITs.PropositionalTruncation
 
-open import CategoryTheory
 
 module _ where
 
 module MndContainerToMonad {ℓs ℓp : Level} (S : Set ℓs) (P : S → Set ℓp)
-                           (MCon : MndContainer ℓs ℓp (S ▷ P)) where
+                           (MCon : MndContainer ℓs ℓp (S ◁ P)) where
 
   open MC.MndContainer MCon hiding (S ; P)
   open MC.IsMndContainer isMndContainer
   open _⇒_
   open Monad
 
-  monad : Monad (ℓs ⊔ ℓp) (ℓs ⊔ ℓp) ⟦ S ▷ P ⟧f
+  monad : Monad (ℓs ⊔ ℓp) (ℓs ⊔ ℓp) ⟦ S ◁ P ⟧f
   α (η monad) X x = (ι , const x)
   nat (η monad) X Y f = ∣ refl ∣₁
   α (μ monad) X (s , f) = (σ s (fst ∘ f) , λ p → snd (f (pr₁ _ _ p)) (pr₂ _ _ p))

@@ -5,12 +5,12 @@ open import DirectedContainer as DC
 open DC.DirectedContainer
 
 open import Level
-open import Cubical.Foundations.Prelude hiding (_▷_)
+open import Cubical.Foundations.Prelude hiding (_◁_)
 
 -- Distributive law direction: Aₘ ∘ Bₘ → Bₘ ∘ Aₘ
 record DirectedDistributiveLaw (ℓs ℓp : Level)
                             (S : Set ℓs) (P : S → Set ℓp) (T : Set ℓs) (Q : T → Set ℓp)
-                            (Aₘ : DirectedContainer _ _ (S ▷ P)) (Bₘ : DirectedContainer _ _ (T ▷ Q)) :
+                            (Aₘ : DirectedContainer _ _ (S ◁ P)) (Bₘ : DirectedContainer _ _ (T ◁ Q)) :
                             Set (suc (ℓs ⊔ ℓp)) where
   
   _⊕ᵃ_ = _⊕_ Aₘ

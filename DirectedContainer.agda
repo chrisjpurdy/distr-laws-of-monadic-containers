@@ -3,7 +3,7 @@
 open import ContainersPlus
 
 open import Level renaming (suc to lsuc ; zero to lzero)
-open import Cubical.Foundations.Prelude hiding (_▷_) renaming (fst to π₁ ; snd to π₂)
+open import Cubical.Foundations.Prelude hiding (_◁_) renaming (fst to π₁ ; snd to π₂)
 
 record DirectedContainer (ℓs ℓp : Level) (C : Container ℓs ℓp) : Set (lsuc (ℓs ⊔ ℓp)) where
   S = Shape C

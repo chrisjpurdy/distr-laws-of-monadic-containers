@@ -3,7 +3,7 @@
 open import ContainersPlus
 
 open import Level renaming (suc to lsuc ; zero to lzero)
-open import Cubical.Foundations.Prelude hiding (_▷_) renaming (fst to π₁ ; snd to π₂)
+open import Cubical.Foundations.Prelude hiding (_◁_) renaming (fst to π₁ ; snd to π₂)
 open import Cubical.Foundations.Function
 open import Cubical.Data.Sigma
 
@@ -60,7 +60,7 @@ mContBuilder : (ℓs ℓp : Level) (S : Set ℓs) (P : S → Set ℓp)
                (pr₁ : (s : S) (f : P s → S) → P (σ s f) → P s)
                (pr₂ : (s : S) (f : P s → S) (p : P (σ s f)) → P (f (pr₁ s f p)))
                (isMndCont : IsMndContainer _ _ S P ι σ pr₁ pr₂) →
-               MndContainer _ _ (S ▷ P)
+               MndContainer _ _ (S ◁ P)
 ι (mContBuilder ℓs ℓp S P ι σ pr₁ pr₂ isMndCont) = ι
 σ (mContBuilder ℓs ℓp S P ι σ pr₁ pr₂ isMndCont) = σ
 pr₁ (mContBuilder ℓs ℓp S P ι σ pr₁ pr₂ isMndCont) = pr₁

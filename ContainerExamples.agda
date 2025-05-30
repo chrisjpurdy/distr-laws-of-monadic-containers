@@ -7,8 +7,8 @@
 open import ContainersPlus
 
 open import Level renaming (suc to lsuc ; zero to lzero)
-open import Function
-open import Cubical.Foundations.Prelude hiding (_▷_)
+open import Cubical.Foundations.Function
+open import Cubical.Foundations.Prelude hiding (_◁_)
 open import Cubical.Data.Empty
 open import Cubical.Data.Nat
 open import Cubical.Data.Fin
@@ -28,13 +28,13 @@ LOrR (inl a) = ⊤
 LOrR (inr b) = ⊥*
 
 Maybe : ∀ {s p} → Container s p 
-Maybe = 𝟚 ▷ JustOrNothing
+Maybe = 𝟚 ◁ JustOrNothing
 
 List : Container lzero lzero
-List = ℕ ▷ Fin
+List = ℕ ◁ Fin
 
 State : ∀ {s} → (S : Set s) → Container s s
-State S = (S → S) ▷ λ _ → S
+State S = (S → S) ◁ λ _ → S
 
 record Monoid (ℓ : Level) (A : Set ℓ) : Set ℓ where
   field
@@ -60,7 +60,7 @@ module MonadExamples where
 
   -- Examples of monadic containers
 
-  ReaderM : ∀ {ℓs ℓp} (A : Set ℓp) → MndContainer ℓs ℓp (⊤ ▷ λ _ → A)
+  ReaderM : ∀ {ℓs ℓp} (A : Set ℓp) → MndContainer ℓs ℓp (⊤ ◁ λ _ → A)
   ι (ReaderM A) = tt
   σ (ReaderM A) _ _ = tt
   pr₁ (ReaderM A) _ _ p = p
@@ -74,7 +74,7 @@ module MonadExamples where
   pr-mul₁₂ (isMndContainer (ReaderM A)) = refl
   pr-mul₂₂ (isMndContainer (ReaderM A)) = refl
 
-  WriterM : {ℓ ℓ' : Level} (A : Set ℓ) (mon : Monoid ℓ A) → MndContainer ℓ ℓ' (A ▷ const ⊤)
+  WriterM : {ℓ ℓ' : Level} (A : Set ℓ) (mon : Monoid ℓ A) → MndContainer ℓ ℓ' (A ◁ const ⊤)
   ι (WriterM A mon) = e mon
   σ (WriterM A mon) a b = (_⊕_ mon) a (b tt)
   pr₁ (WriterM A mon) _ _ tt = tt
@@ -88,7 +88,7 @@ module MonadExamples where
   pr-mul₁₂ (isMndContainer (WriterM A mon)) i tt = tt
   pr-mul₂₂ (isMndContainer (WriterM A mon)) i tt = tt
 
-  StreamM : ∀ {ℓs} → MndContainer ℓs lzero (⊤ ▷ const ℕ)
+  StreamM : ∀ {ℓs} → MndContainer ℓs lzero (⊤ ◁ const ℕ)
   StreamM = ReaderM ℕ
 
   StateM : ∀ {ℓs} (S : Set ℓs) → MndContainer ℓs ℓs (State S)
@@ -125,7 +125,7 @@ module MonadExamples where
 
   -- Note: MaybeM is also special case of CoproductM when E = ⊤
 
-  CoproductM : ∀ {ℓs ℓs' ℓp} (E : Set ℓs) → MndContainer (ℓ-max ℓs ℓs') ℓp ((⊤ {ℓs'}) ⊎ E ▷ LOrR)
+  CoproductM : ∀ {ℓs ℓs' ℓp} (E : Set ℓs) → MndContainer (ℓ-max ℓs ℓs') ℓp ((⊤ {ℓs'}) ⊎ E ◁ LOrR)
   ι (CoproductM E) = inl tt
   σ (CoproductM E) (inl tt) f = f tt
   σ (CoproductM E) (inr e) f = inr e
@@ -153,7 +153,7 @@ module ComonadExamples where
 
   -- Examples of directed containers
 
-  WriterC : ∀ {ℓs ℓp} → (A : Set ℓs) → DirectedContainer ℓs ℓp (A ▷ (const (⊤ {ℓp})))
+  WriterC : ∀ {ℓs ℓp} → (A : Set ℓs) → DirectedContainer ℓs ℓp (A ◁ (const (⊤ {ℓp})))
   o (WriterC A) _ = tt 
   _↓_ (WriterC A) a tt = a
   _⊕_ (WriterC A) tt tt = tt
@@ -163,7 +163,7 @@ module ComonadExamples where
   unitr-⊕ (WriterC A) a tt = refl
   assoc-⊕ (WriterC A) a tt tt i tt = tt
 
-  ReaderC : ∀ {ℓs ℓp} (A : Set ℓp) (mon : Monoid ℓp A) → DirectedContainer ℓs ℓp ((⊤ {ℓs}) ▷ (const A))
+  ReaderC : ∀ {ℓs ℓp} (A : Set ℓp) (mon : Monoid ℓp A) → DirectedContainer ℓs ℓp ((⊤ {ℓs}) ◁ (const A))
   o (ReaderC A mon) tt = e mon 
   _↓_ (ReaderC A mon) tt a = tt
   _⊕_ (ReaderC A mon) = _⊕_ mon
@@ -173,5 +173,5 @@ module ComonadExamples where
   unitr-⊕ (ReaderC A mon) tt = ⊕-unit-r mon
   assoc-⊕ (ReaderC A mon) tt a a' i a'' = ⊕-assoc mon a a' a'' (~ i)
 
-  StreamC : ∀ {ℓs} → DirectedContainer ℓs lzero ((⊤ {ℓs}) ▷ (const ℕ))
+  StreamC : ∀ {ℓs} → DirectedContainer ℓs lzero ((⊤ {ℓs}) ◁ (const ℕ))
   StreamC = ReaderC ℕ ℕ+-monoid
